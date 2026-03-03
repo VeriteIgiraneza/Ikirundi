@@ -1,4 +1,4 @@
-# 🚀 EXPO QUICK START GUIDE
+# EXPO QUICK START GUIDE
 
 ## Your Kirundi Learning App is Ready! 📱🇧🇮
 
