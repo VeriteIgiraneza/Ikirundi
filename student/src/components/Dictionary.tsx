@@ -30,7 +30,7 @@ export const Dictionary: React.FC<DictionaryProps> = ({ words }) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>📚 Kirundi Dictionary</Text>
+        <Text style={styles.title}>Kirundi Dictionary</Text>
         
         <TextInput
           style={styles.searchInput}
