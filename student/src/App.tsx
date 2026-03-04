@@ -148,7 +148,7 @@ function App() {
       <Animated.View
         style={[
           styles.drawer,
-          { transform: [{ translateX: slideAnim }] },
+          { transform: [{ translateX: slideAnim }], backgroundColor: theme.card },
         ]}
       >
         {/* Drawer Header */}
@@ -164,13 +164,14 @@ function App() {
               onPress={() => navigateTo(item.screen)}
               style={[
                 styles.menuItem,
-                activeScreen === item.screen && styles.menuItemActive,
+                activeScreen === item.screen && [styles.menuItemActive, { backgroundColor: theme.badge }],
               ]}
             >
               <Text
                 style={[
                   styles.menuLabel,
-                  activeScreen === item.screen && styles.menuLabelActive,
+                  { color: theme.text },
+                  activeScreen === item.screen && [styles.menuLabelActive, { color: theme.title }],
                 ]}
               >
                 {item.label}
@@ -181,11 +182,10 @@ function App() {
 
         {/* Drawer Footer */}
         {/* Drawer Footer */}
-        <Text style={styles.versionText}>Version 1.0.0</Text>
-        <View style={styles.madeWithLoveBox}>
-            <Text style={styles.madeWithLove}>{strings.madeWithLove}</Text>       
+        <Text style={[styles.versionText, { color: theme.subtext }]}>Version 1.0.0</Text>
+        <View style={[styles.madeWithLoveBox, { borderTopColor: theme.border }]}>
+          <Text style={[styles.drawerFooterText, { color: theme.subtext }]}>{strings.madeWithLove}</Text>       
         </View>
-        {/* <View style={styles.drawerFooter} /> */}
       </Animated.View>
     </SafeAreaView>
   );
