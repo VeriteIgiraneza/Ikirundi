@@ -9,11 +9,11 @@ interface DictionaryProps {
 
 export const Dictionary: React.FC<DictionaryProps> = ({ words }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>('all');
 
   // Get unique categories
-  const categories = ['all', ...new Set(words.map(w => w.category).filter(Boolean))];
-
+  const categories = ['all', ...new Set(words.map(w => w.category).filter((c): c is string => Boolean(c)))];
+  
   // Filter words
   const filteredWords = words.filter(word => {
     const matchesSearch = 
@@ -30,7 +30,6 @@ export const Dictionary: React.FC<DictionaryProps> = ({ words }) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Kirundi Dictionary</Text>
         
         <TextInput
           style={styles.searchInput}
@@ -65,10 +64,6 @@ export const Dictionary: React.FC<DictionaryProps> = ({ words }) => {
         </ScrollView>
       </View>
 
-      <Text style={styles.resultCount}>
-        Showing {filteredWords.length} {filteredWords.length === 1 ? 'word' : 'words'}
-      </Text>
-
       <View style={styles.wordsContainer}>
         {filteredWords.map(word => (
           <WordCard key={word.id} word={word} />
@@ -93,9 +88,9 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 8,
     padding: 16,
-    margin: 16,
+    margin: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -110,12 +105,12 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     backgroundColor: '#f9fafb',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#d1d5db',
-    borderRadius: 8,
+    borderRadius: 16,
     padding: 12,
-    fontSize: 16,
-    marginBottom: 16,
+    fontSize: 14,
+    marginBottom: 2,
   },
   categoryScroll: {
     marginTop: 8,
@@ -145,7 +140,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   wordsContainer: {
-    padding: 16,
+    padding: 2,
   },
   noResults: {
     padding: 48,

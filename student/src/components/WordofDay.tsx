@@ -31,7 +31,6 @@ export const WordOfDay: React.FC<WordOfDayProps> = ({ words }) => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <Text style={styles.emoji}>🌟</Text>
           <Text style={styles.title}>Word of the Day</Text>
         </View>
         <Text style={styles.date}>{formattedDate}</Text>
@@ -59,9 +58,9 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#16a34a',
-    borderRadius: 12,
+    borderRadius: 8,
     padding: 20,
-    margin: 16,
+    margin: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -72,10 +71,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
-  },
-  emoji: {
-    fontSize: 32,
-    marginRight: 12,
   },
   title: {
     fontSize: 28,
@@ -94,7 +89,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: '#3b82f6',
     padding: 16,
-    margin: 16,
+    margin: 6,
     borderRadius: 8,
   },
   tipText: {

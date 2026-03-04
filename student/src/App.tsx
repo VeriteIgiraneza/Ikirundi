@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
   Animated,
   Dimensions,
@@ -15,8 +14,11 @@ import { Dictionary } from './components/Dictionary';
 import { WordOfDay } from './components/WordOfDay';
 import { Quiz } from './components/Quiz';
 import { sampleWords } from './data/words';
+import { Settings } from './components/Settings';
+import { translations, Language } from './i18n/translations';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-type Screen = 'dictionary' | 'wordOfDay' | 'quiz';
+type Screen = 'dictionary' | 'wordOfDay' | 'quiz' | 'settings';
 
 const DRAWER_WIDTH = 280;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -24,6 +26,9 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 function App() {
   const [activeScreen, setActiveScreen] = useState<Screen>('dictionary');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [displayLang, setDisplayLang] = useState<Language>('en');
+  const [translationLang, setTranslationLang] = useState<Language>('en');
+  const strings = translations[displayLang];
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayAnim = useRef(new Animated.Value(0)).current;
 
@@ -68,22 +73,25 @@ function App() {
   const getScreenTitle = () => {
     switch (activeScreen) {
       case 'dictionary':
-        return 'Dictionary';
+        return strings.dictionary;
       case 'wordOfDay':
-        return 'Word of the Day';
+        return strings.wordOfDay;
       case 'quiz':
-        return 'Quiz';
+        return strings.quiz;
+      case 'settings':
+        return strings.settings;
     }
   };
 
   const menuItems: { screen: Screen; label: string }[] = [
-    { screen: 'dictionary', label: 'Dictionary' },
-    { screen: 'wordOfDay', label: 'Word of the Day' },
-    { screen: 'quiz', label: 'Quiz' },
+    { screen: 'dictionary', label: strings.dictionary },
+    { screen: 'wordOfDay', label: strings.wordOfDay },
+    { screen: 'quiz', label: strings.quiz },
+    { screen: 'settings', label: strings.settings },
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="light-content" backgroundColor="#15803d" />
 
       {/* Header with Hamburger */}
@@ -102,6 +110,15 @@ function App() {
         {activeScreen === 'dictionary' && <Dictionary words={sampleWords} />}
         {activeScreen === 'wordOfDay' && <WordOfDay words={sampleWords} />}
         {activeScreen === 'quiz' && <Quiz words={sampleWords} />}
+        {activeScreen === 'settings' && (
+          <Settings
+            displayLang={displayLang}
+            translationLang={translationLang}
+            onDisplayLangChange={setDisplayLang}
+            onTranslationLangChange={setTranslationLang}
+            strings={strings}
+          />
+        )}
       </View>
 
       {/* Overlay (dark background when drawer is open) */}
@@ -130,7 +147,7 @@ function App() {
       >
         {/* Drawer Header */}
         <View style={styles.drawerHeader}>
-          <Text style={styles.drawerTitle}>🇧🇮 Learn Kirundi</Text>
+          <Text style={styles.drawerTitle}>🇧🇮 {strings.learnKirundi}</Text>
         </View>
 
         {/* Menu Items */}
@@ -160,9 +177,9 @@ function App() {
         {/* Drawer Footer */}
         <Text style={styles.versionText}>Version 1.0.0</Text>
         <View style={styles.madeWithLoveBox}>
-          <Text style={styles.drawerFooterText}>Made with ❤️ for the Burundian community worldwide</Text>
+            <Text style={styles.madeWithLove}>{strings.madeWithLove}</Text>       
         </View>
-        <View style={styles.drawerFooter} />
+        {/* <View style={styles.drawerFooter} /> */}
       </Animated.View>
     </SafeAreaView>
   );
@@ -180,8 +197,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    paddingTop: Platform.OS === 'ios' ? 1 : (StatusBar.currentHeight || 24) + 2,
+    paddingVertical: 10,
+    marginTop: Platform.OS === 'ios' ? -14 : -6,
   },
   hamburger: {
     width: 36,
@@ -315,6 +332,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#e5e7eb',
     paddingVertical: 8,
     paddingHorizontal: 20,
+    alignItems: 'center',
   },
   
   // Drawer Footer
@@ -326,7 +344,7 @@ const styles = StyleSheet.create({
     marginBottom: Platform.OS === 'android' ? 20 : 10,
   },
   drawerFooterText: {
-    fontSize: 12,
+    fontSize: 8,
     textAlign: 'center',
     color: '#6b7280',
   },

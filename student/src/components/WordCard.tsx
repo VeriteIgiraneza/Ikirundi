@@ -59,13 +59,13 @@ export const WordCard: React.FC<WordCardProps> = ({ word, showImage = true }) =>
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-    marginBottom: 16,
+    marginBottom: 10,
     overflow: 'hidden',
   },
   image: {
