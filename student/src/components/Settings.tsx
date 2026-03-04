@@ -1,13 +1,17 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Switch, StyleSheet } from 'react-native';
 import { Language } from '../i18n/translations';
+import { Theme, ThemeMode } from '../i18n/themes';
 
 interface SettingsProps {
   displayLang: Language;
   translationLang: Language;
   onDisplayLangChange: (lang: Language) => void;
   onTranslationLangChange: (lang: Language) => void;
+  themeMode: ThemeMode;
+  onThemeModeChange: (mode: ThemeMode) => void;
   strings: Record<string, string>;
+  theme: Theme;
 }
 
 export const Settings: React.FC<SettingsProps> = ({
@@ -15,26 +19,31 @@ export const Settings: React.FC<SettingsProps> = ({
   translationLang,
   onDisplayLangChange,
   onTranslationLangChange,
+  themeMode,
+  onThemeModeChange,
   strings,
+  theme,
 }) => {
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Display Language */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{strings.displayLanguage}</Text>
-        <Text style={styles.sectionDesc}>{strings.displayLanguageDesc}</Text>
+      <View style={[styles.section, { backgroundColor: theme.card, shadowColor: theme.text }]}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{strings.displayLanguage}</Text>
+        <Text style={[styles.sectionDesc, { color: theme.subtext }]}>{strings.displayLanguageDesc}</Text>
         <View style={styles.optionsRow}>
           <TouchableOpacity
             onPress={() => onDisplayLangChange('en')}
             style={[
               styles.optionButton,
-              displayLang === 'en' && styles.optionButtonActive,
+              { borderColor: theme.border, backgroundColor: theme.input },
+              displayLang === 'en' && { borderColor: theme.accent, backgroundColor: theme.badge },
             ]}
           >
             <Text
               style={[
                 styles.optionText,
-                displayLang === 'en' && styles.optionTextActive,
+                { color: theme.text },
+                displayLang === 'en' && { color: theme.title, fontWeight: '700' },
               ]}
             >
               {strings.englishLabel}
@@ -44,13 +53,15 @@ export const Settings: React.FC<SettingsProps> = ({
             onPress={() => onDisplayLangChange('fr')}
             style={[
               styles.optionButton,
-              displayLang === 'fr' && styles.optionButtonActive,
+              { borderColor: theme.border, backgroundColor: theme.input },
+              displayLang === 'fr' && { borderColor: theme.accent, backgroundColor: theme.badge },
             ]}
           >
             <Text
               style={[
                 styles.optionText,
-                displayLang === 'fr' && styles.optionTextActive,
+                { color: theme.text },
+                displayLang === 'fr' && { color: theme.title, fontWeight: '700' },
               ]}
             >
               {strings.frenchLabel}
@@ -60,21 +71,23 @@ export const Settings: React.FC<SettingsProps> = ({
       </View>
 
       {/* Translation Language */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{strings.translationLanguage}</Text>
-        <Text style={styles.sectionDesc}>{strings.translationLanguageDesc}</Text>
+      <View style={[styles.section, { backgroundColor: theme.card, shadowColor: theme.text }]}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{strings.translationLanguage}</Text>
+        <Text style={[styles.sectionDesc, { color: theme.subtext }]}>{strings.translationLanguageDesc}</Text>
         <View style={styles.optionsRow}>
           <TouchableOpacity
             onPress={() => onTranslationLangChange('en')}
             style={[
               styles.optionButton,
-              translationLang === 'en' && styles.optionButtonActive,
+              { borderColor: theme.border, backgroundColor: theme.input },
+              translationLang === 'en' && { borderColor: theme.accent, backgroundColor: theme.badge },
             ]}
           >
             <Text
               style={[
                 styles.optionText,
-                translationLang === 'en' && styles.optionTextActive,
+                { color: theme.text },
+                translationLang === 'en' && { color: theme.title, fontWeight: '700' },
               ]}
             >
               {strings.englishLabel}
@@ -84,18 +97,36 @@ export const Settings: React.FC<SettingsProps> = ({
             onPress={() => onTranslationLangChange('fr')}
             style={[
               styles.optionButton,
-              translationLang === 'fr' && styles.optionButtonActive,
+              { borderColor: theme.border, backgroundColor: theme.input },
+              translationLang === 'fr' && { borderColor: theme.accent, backgroundColor: theme.badge },
             ]}
           >
             <Text
               style={[
                 styles.optionText,
-                translationLang === 'fr' && styles.optionTextActive,
+                { color: theme.text },
+                translationLang === 'fr' && { color: theme.title, fontWeight: '700' },
               ]}
             >
               {strings.frenchLabel}
             </Text>
           </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Monochrome Toggle */}
+      <View style={[styles.section, { backgroundColor: theme.card, shadowColor: theme.text }]}>
+        <View style={styles.toggleRow}>
+          <View style={styles.toggleInfo}>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>{strings.monochromeUI}</Text>
+            <Text style={[styles.sectionDesc, { color: theme.subtext }]}>{strings.monochromeUIDesc}</Text>
+          </View>
+          <Switch
+            value={themeMode === 'mono'}
+            onValueChange={(value) => onThemeModeChange(value ? 'mono' : 'color')}
+            trackColor={{ false: '#e5e7eb', true: '#333333' }}
+            thumbColor={'#fff'}
+          />
         </View>
       </View>
     </ScrollView>
@@ -105,15 +136,12 @@ export const Settings: React.FC<SettingsProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0fdf4',
     padding: 16,
   },
   section: {
-    backgroundColor: '#fff',
     borderRadius: 10,
     padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -122,12 +150,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111827',
     marginBottom: 4,
   },
   sectionDesc: {
     fontSize: 13,
-    color: '#6b7280',
     marginBottom: 16,
   },
   optionsRow: {
@@ -139,21 +165,19 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#e5e7eb',
-    backgroundColor: '#f9fafb',
     alignItems: 'center',
-  },
-  optionButtonActive: {
-    borderColor: '#16a34a',
-    backgroundColor: '#d1fae5',
   },
   optionText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#374151',
   },
-  optionTextActive: {
-    color: '#15803d',
-    fontWeight: '700',
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  toggleInfo: {
+    flex: 1,
+    marginRight: 16,
   },
 });

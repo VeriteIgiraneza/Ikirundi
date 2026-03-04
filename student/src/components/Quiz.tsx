@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import { Word } from '../types';
 import { shuffle } from '../utils/shuffle';
+import { Theme } from '../i18n/themes';
 
 interface QuizProps {
   words: Word[];
+  theme: Theme;
 }
 
-export const Quiz: React.FC<QuizProps> = ({ words }) => {
+export const Quiz: React.FC<QuizProps> = ({ words, theme }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -18,7 +20,6 @@ export const Quiz: React.FC<QuizProps> = ({ words }) => {
     correctAnswer: string;
   }>>([]);
 
-  // Generate quiz questions
   useEffect(() => {
     const shuffledWords = shuffle(words).slice(0, 5);
     const questions = shuffledWords.map(word => {
@@ -27,25 +28,17 @@ export const Quiz: React.FC<QuizProps> = ({ words }) => {
         .map(w => w.english)
         .sort(() => Math.random() - 0.5)
         .slice(0, 3);
-
       const options = shuffle([word.english, ...wrongAnswers]);
-
-      return {
-        word,
-        options,
-        correctAnswer: word.english
-      };
+      return { word, options, correctAnswer: word.english };
     });
     setQuizQuestions(questions);
   }, [words]);
 
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
-    
     if (answer === quizQuestions[currentQuestion].correctAnswer) {
       setScore(score + 1);
     }
-
     setTimeout(() => {
       if (currentQuestion + 1 < quizQuestions.length) {
         setCurrentQuestion(currentQuestion + 1);
@@ -61,7 +54,6 @@ export const Quiz: React.FC<QuizProps> = ({ words }) => {
     setScore(0);
     setShowResult(false);
     setSelectedAnswer(null);
-    
     const shuffledWords = shuffle(words).slice(0, 5);
     const questions = shuffledWords.map(word => {
       const wrongAnswers = words
@@ -77,8 +69,8 @@ export const Quiz: React.FC<QuizProps> = ({ words }) => {
 
   if (quizQuestions.length === 0) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading quiz...</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: theme.bg }]}>
+        <Text style={[styles.loadingText, { color: theme.subtext }]}>Loading quiz...</Text>
       </View>
     );
   }
@@ -93,16 +85,16 @@ export const Quiz: React.FC<QuizProps> = ({ words }) => {
         : 'Keep learning! You\'ll get better!';
 
     return (
-      <ScrollView style={styles.container}>
-        <View style={styles.resultCard}>
+      <ScrollView style={[styles.container, { backgroundColor: theme.bg }]}>
+        <View style={[styles.resultCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
           <Text style={styles.resultEmoji}>{emoji}</Text>
-          <Text style={styles.resultTitle}>Quiz Complete!</Text>
-          <Text style={styles.resultScore}>
+          <Text style={[styles.resultTitle, { color: theme.text }]}>Quiz Complete!</Text>
+          <Text style={[styles.resultScore, { color: theme.accent }]}>
             {score} / {quizQuestions.length}
           </Text>
-          <Text style={styles.resultMessage}>{message}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={resetQuiz}>
-            <Text style={styles.retryButtonText}>Try Again</Text>
+          <Text style={[styles.resultMessage, { color: theme.subtext }]}>{message}</Text>
+          <TouchableOpacity style={[styles.retryButton, { backgroundColor: theme.accent }]} onPress={resetQuiz}>
+            <Text style={[styles.retryButtonText, { color: theme.accentText }]}>Try Again</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -113,22 +105,22 @@ export const Quiz: React.FC<QuizProps> = ({ words }) => {
   const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Progress */}
-      <View style={styles.progressCard}>
+      <View style={[styles.progressCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
         <View style={styles.progressHeader}>
-          <Text style={styles.progressText}>
+          <Text style={[styles.progressText, { color: theme.subtext }]}>
             Question {currentQuestion + 1} of {quizQuestions.length}
           </Text>
-          <Text style={styles.scoreText}>Score: {score}</Text>
+          <Text style={[styles.scoreText, { color: theme.accent }]}>Score: {score}</Text>
         </View>
-        <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBar, { width: `${progress}%` }]} />
+        <View style={[styles.progressBarContainer, { backgroundColor: theme.border }]}>
+          <View style={[styles.progressBar, { width: `${progress}%`, backgroundColor: theme.accent }]} />
         </View>
       </View>
 
       {/* Question */}
-      <View style={styles.questionCard}>
+      <View style={[styles.questionCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
         {question.word.imageUrl && (
           <Image 
             source={{ uri: question.word.imageUrl }}
@@ -137,27 +129,29 @@ export const Quiz: React.FC<QuizProps> = ({ words }) => {
           />
         )}
         
-        <Text style={styles.questionText}>
-          What does <Text style={styles.kirundi}>"{question.word.kirundi}"</Text> mean?
+        <Text style={[styles.questionText, { color: theme.text }]}>
+          What does <Text style={{ color: theme.title }}>"{question.word.kirundi}"</Text> mean?
         </Text>
         
         {question.word.pronunciation && (
-          <Text style={styles.pronunciation}>/{question.word.pronunciation}/</Text>
+          <Text style={[styles.pronunciation, { color: theme.subtext }]}>/{question.word.pronunciation}/</Text>
         )}
 
-        {/* Options */}
         <View style={styles.optionsContainer}>
           {question.options.map((option, index) => {
             const isSelected = selectedAnswer === option;
             const isCorrect = option === question.correctAnswer;
             const showFeedback = selectedAnswer !== null;
 
-            let buttonStyle = styles.optionButton;
+            let bgColor = theme.input;
+            let borderColor = theme.border;
             if (showFeedback) {
               if (isCorrect) {
-                buttonStyle = styles.optionButtonCorrect;
+                bgColor = theme.badge;
+                borderColor = theme.accent;
               } else if (isSelected) {
-                buttonStyle = styles.optionButtonWrong;
+                bgColor = '#fee2e2';
+                borderColor = '#dc2626';
               }
             }
 
@@ -166,9 +160,9 @@ export const Quiz: React.FC<QuizProps> = ({ words }) => {
                 key={index}
                 onPress={() => !selectedAnswer && handleAnswer(option)}
                 disabled={selectedAnswer !== null}
-                style={[styles.option, buttonStyle]}
+                style={[styles.option, { backgroundColor: bgColor, borderColor: borderColor }]}
               >
-                <Text style={styles.optionText}>
+                <Text style={[styles.optionText, { color: theme.text }]}>
                   {option}
                   {showFeedback && isCorrect && ' ✅'}
                   {showFeedback && isSelected && !isCorrect && ' ❌'}
@@ -185,7 +179,6 @@ export const Quiz: React.FC<QuizProps> = ({ words }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0fdf4',
   },
   loadingContainer: {
     flex: 1,
@@ -195,14 +188,11 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#6b7280',
   },
   progressCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     margin: 16,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -216,30 +206,24 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#6b7280',
   },
   scoreText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#16a34a',
   },
   progressBarContainer: {
     height: 8,
-    backgroundColor: '#e5e7eb',
     borderRadius: 4,
     overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#16a34a',
     borderRadius: 4,
   },
   questionCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
     margin: 16,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -254,15 +238,10 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
     marginBottom: 8,
-  },
-  kirundi: {
-    color: '#16a34a',
   },
   pronunciation: {
     fontSize: 14,
-    color: '#6b7280',
     fontStyle: 'italic',
     marginBottom: 16,
   },
@@ -274,30 +253,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 2,
   },
-  optionButton: {
-    backgroundColor: '#f9fafb',
-    borderColor: '#e5e7eb',
-  },
-  optionButtonCorrect: {
-    backgroundColor: '#d1fae5',
-    borderColor: '#16a34a',
-  },
-  optionButtonWrong: {
-    backgroundColor: '#fee2e2',
-    borderColor: '#dc2626',
-  },
   optionText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#111827',
   },
   resultCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 32,
     margin: 16,
     alignItems: 'center',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -310,29 +274,24 @@ const styles = StyleSheet.create({
   resultTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#111827',
     marginBottom: 16,
   },
   resultScore: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: '#16a34a',
     marginBottom: 8,
   },
   resultMessage: {
     fontSize: 18,
-    color: '#6b7280',
     marginBottom: 24,
     textAlign: 'center',
   },
   retryButton: {
-    backgroundColor: '#16a34a',
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 8,
   },
   retryButtonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },

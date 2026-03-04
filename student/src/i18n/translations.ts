@@ -41,6 +41,8 @@ export const translations: Record<Language, Record<string, string>> = {
     translationLanguageDesc: 'Language shown for Kirundi word translations',
     englishLabel: 'English',
     frenchLabel: 'Français',
+    monochromeUI: 'Monochrome UI',
+    monochromeUIDesc: 'Switch to black & white theme',
 
     // Footer
     madeWithLove: 'Made with ❤️ for the Burundian community worldwide',
@@ -85,6 +87,8 @@ export const translations: Record<Language, Record<string, string>> = {
     translationLanguageDesc: 'Langue affichée pour les traductions des mots Kirundi',
     englishLabel: 'English',
     frenchLabel: 'Français',
+    monochromeUI: 'Interface monochrome',
+    monochromeUIDesc: 'Passer au thème noir et blanc',
 
     // Footer
     madeWithLove: 'Fait avec ❤️ pour la communauté burundaise du monde entier',

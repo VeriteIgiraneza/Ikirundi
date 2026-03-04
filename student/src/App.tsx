@@ -16,6 +16,7 @@ import { Quiz } from './components/Quiz';
 import { sampleWords } from './data/words';
 import { Settings } from './components/Settings';
 import { translations, Language } from './i18n/translations';
+import { themes, ThemeMode } from './i18n/themes';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Screen = 'dictionary' | 'wordOfDay' | 'quiz' | 'settings';
@@ -28,7 +29,9 @@ function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [displayLang, setDisplayLang] = useState<Language>('en');
   const [translationLang, setTranslationLang] = useState<Language>('en');
+  const [themeMode, setThemeMode] = useState<ThemeMode>('color');
   const strings = translations[displayLang];
+  const theme = themes[themeMode];
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayAnim = useRef(new Animated.Value(0)).current;
 
@@ -91,11 +94,11 @@ function App() {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.header }]} edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar barStyle="light-content" backgroundColor="#15803d" />
 
       {/* Header with Hamburger */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: theme.header }]}>
         <TouchableOpacity onPress={openDrawer} style={styles.hamburger}>
           <View style={styles.hamburgerLine} />
           <View style={styles.hamburgerLine} />
@@ -106,17 +109,20 @@ function App() {
       </View>
 
       {/* Main Content */}
-      <View style={styles.content}>
-        {activeScreen === 'dictionary' && <Dictionary words={sampleWords} />}
-        {activeScreen === 'wordOfDay' && <WordOfDay words={sampleWords} />}
-        {activeScreen === 'quiz' && <Quiz words={sampleWords} />}
+      <View style={[styles.content, { backgroundColor: theme.bg }]}>
+        {activeScreen === 'dictionary' && <Dictionary words={sampleWords} theme={theme} />}
+        {activeScreen === 'wordOfDay' && <WordOfDay words={sampleWords} theme={theme} />}
+        {activeScreen === 'quiz' && <Quiz words={sampleWords} theme={theme} />}
         {activeScreen === 'settings' && (
           <Settings
             displayLang={displayLang}
             translationLang={translationLang}
             onDisplayLangChange={setDisplayLang}
             onTranslationLangChange={setTranslationLang}
+            themeMode={themeMode}
+            onThemeModeChange={setThemeMode}
             strings={strings}
+            theme={theme}
           />
         )}
       </View>
@@ -146,7 +152,7 @@ function App() {
         ]}
       >
         {/* Drawer Header */}
-        <View style={styles.drawerHeader}>
+        <View style={[styles.drawerHeader, { backgroundColor: theme.header }]}>
           <Text style={styles.drawerTitle}>🇧🇮 {strings.learnKirundi}</Text>
         </View>
 
@@ -268,6 +274,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 20,
+    paddingBottom: Platform.OS === 'android' ? 40 : 20,
   },
   drawerHeader: {
     backgroundColor: '#15803d',
