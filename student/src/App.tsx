@@ -14,12 +14,16 @@ import { Dictionary } from './components/Dictionary';
 import { WordOfDay } from './components/WordOfDay';
 import { Quiz } from './components/Quiz';
 import { sampleWords } from './data/words';
+import { sampleStories } from './data/stories';
+import { Story } from './types/storyTypes';
+import { StoriesList } from './components/StoriesList';
+import { StoryReader } from './components/StoryReader';
 import { Settings } from './components/Settings';
 import { translations, Language, TranslationLang } from './i18n/translations';
 import { themes, ThemeMode } from './i18n/themes';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-type Screen = 'dictionary' | 'wordOfDay' | 'quiz' | 'settings';
+type Screen = 'dictionary' | 'wordOfDay' | 'quiz' | 'stories' | 'settings' ;
 
 const DRAWER_WIDTH = 280;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -29,6 +33,7 @@ function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [translationLang, setTranslationLang] = useState<TranslationLang>('en');
   const [themeMode, setThemeMode] = useState<ThemeMode>('color');
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const strings = translations['en'];
   const theme = themes[themeMode];
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
@@ -82,6 +87,8 @@ function App() {
         return strings.quiz;
       case 'settings':
         return strings.settings;
+      case 'stories':
+        return 'Stories';
     }
   };
 
@@ -89,6 +96,7 @@ function App() {
     { screen: 'dictionary', label: strings.dictionary },
     { screen: 'wordOfDay', label: strings.wordOfDay },
     { screen: 'quiz', label: strings.quiz },
+    { screen: 'stories', label: 'Stories' },
     { screen: 'settings', label: strings.settings },
   ];
 
@@ -112,6 +120,22 @@ function App() {
         {activeScreen === 'dictionary' && <Dictionary words={sampleWords} theme={theme} translationLang={translationLang} />}
         {activeScreen === 'wordOfDay' && <WordOfDay words={sampleWords} theme={theme} translationLang={translationLang} />}
         {activeScreen === 'quiz' && <Quiz words={sampleWords} theme={theme} translationLang={translationLang} />}
+        {activeScreen === 'stories' && !selectedStory && (
+          <StoriesList
+            stories={sampleStories}
+            theme={theme}
+            translationLang={translationLang}
+            onSelectStory={setSelectedStory}
+          />
+        )}
+        {activeScreen === 'stories' && selectedStory && (
+          <StoryReader
+            story={selectedStory}
+            theme={theme}
+            translationLang={translationLang}
+            onBack={() => setSelectedStory(null)}
+          />
+        )}
         {activeScreen === 'settings' && (
           <Settings
             translationLang={translationLang}
