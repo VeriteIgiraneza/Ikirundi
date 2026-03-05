@@ -3,13 +3,15 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 
 import { Word } from '../types';
 import { WordCard } from './WordCard';
 import { Theme } from '../i18n/themes';
+import { TranslationLang } from '../i18n/translations';
 
 interface DictionaryProps {
   words: Word[];
   theme: Theme;
+  translationLang: TranslationLang;
 }
 
-export const Dictionary: React.FC<DictionaryProps> = ({ words, theme }) => {
+export const Dictionary: React.FC<DictionaryProps> = ({ words, theme, translationLang }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -67,7 +69,7 @@ export const Dictionary: React.FC<DictionaryProps> = ({ words, theme }) => {
 
       <View style={styles.wordsContainer}>
         {filteredWords.map(word => (
-          <WordCard key={word.id} word={word} theme={theme} />
+          <WordCard key={word.id} word={word} theme={theme} translationLang={translationLang} />
         ))}
       </View>
 

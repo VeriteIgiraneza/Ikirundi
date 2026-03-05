@@ -1,4 +1,5 @@
 export type Language = 'en' | 'fr';
+export type TranslationLang = 'en' | 'fr' | 'both';
 
 export const translations: Record<Language, Record<string, string>> = {
   en: {
@@ -41,6 +42,7 @@ export const translations: Record<Language, Record<string, string>> = {
     translationLanguageDesc: 'Language shown for Kirundi word translations',
     englishLabel: 'English',
     frenchLabel: 'Français',
+    bothLabel: 'Both',
     monochromeUI: 'Monochrome UI',
     monochromeUIDesc: 'Switch to black & white theme',
 
@@ -87,6 +89,7 @@ export const translations: Record<Language, Record<string, string>> = {
     translationLanguageDesc: 'Langue affichée pour les traductions des mots Kirundi',
     englishLabel: 'English',
     frenchLabel: 'Français',
+    bothLabel: 'Les deux',
     monochromeUI: 'Interface monochrome',
     monochromeUIDesc: 'Passer au thème noir et blanc',
 

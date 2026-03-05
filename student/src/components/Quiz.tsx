@@ -3,13 +3,15 @@ import { View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from 'rea
 import { Word } from '../types';
 import { shuffle } from '../utils/shuffle';
 import { Theme } from '../i18n/themes';
+import { TranslationLang } from '../i18n/translations';
 
 interface QuizProps {
   words: Word[];
   theme: Theme;
+  translationLang: TranslationLang;
 }
 
-export const Quiz: React.FC<QuizProps> = ({ words, theme }) => {
+export const Quiz: React.FC<QuizProps> = ({ words, theme, translationLang }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -20,16 +22,22 @@ export const Quiz: React.FC<QuizProps> = ({ words, theme }) => {
     correctAnswer: string;
   }>>([]);
 
+  const getTranslation = (word: Word): string => {
+    if (translationLang === 'fr' && word.french) return word.french;
+    return word.english;
+  };
+
   useEffect(() => {
     const shuffledWords = shuffle(words).slice(0, 5);
     const questions = shuffledWords.map(word => {
+      const correctAnswer = getTranslation(word);
       const wrongAnswers = words
         .filter(w => w.id !== word.id)
-        .map(w => w.english)
+        .map(w => getTranslation(w))
         .sort(() => Math.random() - 0.5)
         .slice(0, 3);
-      const options = shuffle([word.english, ...wrongAnswers]);
-      return { word, options, correctAnswer: word.english };
+      const options = shuffle([correctAnswer, ...wrongAnswers]);
+      return { word, options, correctAnswer };
     });
     setQuizQuestions(questions);
   }, [words]);
@@ -56,13 +64,14 @@ export const Quiz: React.FC<QuizProps> = ({ words, theme }) => {
     setSelectedAnswer(null);
     const shuffledWords = shuffle(words).slice(0, 5);
     const questions = shuffledWords.map(word => {
+      const correctAnswer = getTranslation(word);
       const wrongAnswers = words
         .filter(w => w.id !== word.id)
-        .map(w => w.english)
+        .map(w => getTranslation(w))
         .sort(() => Math.random() - 0.5)
         .slice(0, 3);
-      const options = shuffle([word.english, ...wrongAnswers]);
-      return { word, options, correctAnswer: word.english };
+      const options = shuffle([correctAnswer, ...wrongAnswers]);
+      return { word, options, correctAnswer };
     });
     setQuizQuestions(questions);
   };

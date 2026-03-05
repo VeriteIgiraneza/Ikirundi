@@ -3,13 +3,15 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Word } from '../types';
 import { WordCard } from './WordCard';
 import { Theme } from '../i18n/themes';
+import { TranslationLang } from '../i18n/translations';
 
 interface WordOfDayProps {
   words: Word[];
   theme: Theme;
+  translationLang: TranslationLang;
 }
 
-export const WordOfDay: React.FC<WordOfDayProps> = ({ words, theme }) => {
+export const WordOfDay: React.FC<WordOfDayProps> = ({ words, theme, translationLang }) => {
   const [wordOfDay, setWordOfDay] = useState<Word | null>(null);
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export const WordOfDay: React.FC<WordOfDayProps> = ({ words, theme }) => {
       </View>
 
       <View style={styles.cardContainer}>
-        <WordCard word={wordOfDay} theme={theme} />
+        <WordCard word={wordOfDay} theme={theme} translationLang={translationLang} />
       </View>
 
       <View style={[styles.tip, { backgroundColor: theme.badge, borderLeftColor: theme.accent }]}>

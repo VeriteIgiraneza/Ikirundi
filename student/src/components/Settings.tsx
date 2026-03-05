@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Switch, StyleSheet } from 'react-native';
-import { Language } from '../i18n/translations';
+import { Language, TranslationLang } from '../i18n/translations';
 import { Theme, ThemeMode } from '../i18n/themes';
 
 interface SettingsProps {
   displayLang: Language;
-  translationLang: Language;
+  translationLang: TranslationLang;
   onDisplayLangChange: (lang: Language) => void;
-  onTranslationLangChange: (lang: Language) => void;
+  onTranslationLangChange: (lang: TranslationLang) => void;
   themeMode: ThemeMode;
   onThemeModeChange: (mode: ThemeMode) => void;
   strings: Record<string, string>;
@@ -109,6 +109,24 @@ export const Settings: React.FC<SettingsProps> = ({
               ]}
             >
               {strings.frenchLabel}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => onTranslationLangChange('both')}
+            style={[
+              styles.optionButton,
+              { borderColor: theme.border, backgroundColor: theme.input },
+              translationLang === 'both' && { borderColor: theme.accent, backgroundColor: theme.badge },
+            ]}
+          >
+            <Text
+              style={[
+                styles.optionText,
+                { color: theme.text },
+                translationLang === 'both' && { color: theme.title, fontWeight: '700' },
+              ]}
+            >
+              {strings.bothLabel}
             </Text>
           </TouchableOpacity>
         </View>

@@ -15,7 +15,7 @@ import { WordOfDay } from './components/WordOfDay';
 import { Quiz } from './components/Quiz';
 import { sampleWords } from './data/words';
 import { Settings } from './components/Settings';
-import { translations, Language } from './i18n/translations';
+import { translations, Language, TranslationLang } from './i18n/translations';
 import { themes, ThemeMode } from './i18n/themes';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -28,7 +28,7 @@ function App() {
   const [activeScreen, setActiveScreen] = useState<Screen>('dictionary');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [displayLang, setDisplayLang] = useState<Language>('en');
-  const [translationLang, setTranslationLang] = useState<Language>('en');
+  const [translationLang, setTranslationLang] = useState<TranslationLang>('both');
   const [themeMode, setThemeMode] = useState<ThemeMode>('color');
   const strings = translations[displayLang];
   const theme = themes[themeMode];
@@ -110,9 +110,9 @@ function App() {
 
       {/* Main Content */}
       <View style={[styles.content, { backgroundColor: theme.bg }]}>
-        {activeScreen === 'dictionary' && <Dictionary words={sampleWords} theme={theme} />}
-        {activeScreen === 'wordOfDay' && <WordOfDay words={sampleWords} theme={theme} />}
-        {activeScreen === 'quiz' && <Quiz words={sampleWords} theme={theme} />}
+        {activeScreen === 'dictionary' && <Dictionary words={sampleWords} theme={theme} translationLang={translationLang} />}
+        {activeScreen === 'wordOfDay' && <WordOfDay words={sampleWords} theme={theme} translationLang={translationLang} />}
+        {activeScreen === 'quiz' && <Quiz words={sampleWords} theme={theme} translationLang={translationLang} />}
         {activeScreen === 'settings' && (
           <Settings
             displayLang={displayLang}

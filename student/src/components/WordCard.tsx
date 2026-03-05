@@ -2,14 +2,16 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Word } from '../types';
 import { Theme } from '../i18n/themes';
+import { TranslationLang } from '../i18n/translations';
 
 interface WordCardProps {
   word: Word;
   showImage?: boolean;
   theme: Theme;
+  translationLang?: TranslationLang;
 }
 
-export const WordCard: React.FC<WordCardProps> = ({ word, showImage = true, theme }) => {
+export const WordCard: React.FC<WordCardProps> = ({ word, showImage = true, theme, translationLang = 'both' }) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.card, shadowColor: theme.text }]}>
       {showImage && word.imageUrl && (
@@ -29,11 +31,13 @@ export const WordCard: React.FC<WordCardProps> = ({ word, showImage = true, them
         </View>
         
         <View style={styles.translations}>
-          <View style={styles.translationBox}>
-            <Text style={[styles.label, { color: theme.subtext }]}>ENGLISH</Text>
-            <Text style={[styles.translation, { color: theme.text }]}>{word.english}</Text>
-          </View>
-          {word.french && (
+          {(translationLang === 'en' || translationLang === 'both') && (
+            <View style={styles.translationBox}>
+              <Text style={[styles.label, { color: theme.subtext }]}>ENGLISH</Text>
+              <Text style={[styles.translation, { color: theme.text }]}>{word.english}</Text>
+            </View>
+          )}
+          {(translationLang === 'fr' || translationLang === 'both') && word.french && (
             <View style={styles.translationBox}>
               <Text style={[styles.label, { color: theme.subtext }]}>FRENCH</Text>
               <Text style={[styles.translation, { color: theme.text }]}>{word.french}</Text>
