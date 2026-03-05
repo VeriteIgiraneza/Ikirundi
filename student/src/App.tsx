@@ -153,7 +153,7 @@ function App() {
       >
         {/* Drawer Header */}
         <View style={[styles.drawerHeader, { backgroundColor: theme.header }]}>
-          <Text style={styles.drawerTitle}>🇧🇮 {strings.learnKirundi}</Text>
+          <Text style={styles.drawerTitle}>{strings.learnKirundi}</Text>
         </View>
 
         {/* Menu Items */}
