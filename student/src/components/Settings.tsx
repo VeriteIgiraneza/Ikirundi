@@ -1,12 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Switch, StyleSheet } from 'react-native';
-import { Language, TranslationLang } from '../i18n/translations';
+import { TranslationLang } from '../i18n/translations';
 import { Theme, ThemeMode } from '../i18n/themes';
 
 interface SettingsProps {
-  displayLang: Language;
   translationLang: TranslationLang;
-  onDisplayLangChange: (lang: Language) => void;
   onTranslationLangChange: (lang: TranslationLang) => void;
   themeMode: ThemeMode;
   onThemeModeChange: (mode: ThemeMode) => void;
@@ -15,9 +13,7 @@ interface SettingsProps {
 }
 
 export const Settings: React.FC<SettingsProps> = ({
-  displayLang,
   translationLang,
-  onDisplayLangChange,
   onTranslationLangChange,
   themeMode,
   onThemeModeChange,
@@ -26,49 +22,6 @@ export const Settings: React.FC<SettingsProps> = ({
 }) => {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.bg }]}>
-      {/* Display Language */}
-      <View style={[styles.section, { backgroundColor: theme.card, shadowColor: theme.text }]}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>{strings.displayLanguage}</Text>
-        <Text style={[styles.sectionDesc, { color: theme.subtext }]}>{strings.displayLanguageDesc}</Text>
-        <View style={styles.optionsRow}>
-          <TouchableOpacity
-            onPress={() => onDisplayLangChange('en')}
-            style={[
-              styles.optionButton,
-              { borderColor: theme.border, backgroundColor: theme.input },
-              displayLang === 'en' && { borderColor: theme.accent, backgroundColor: theme.badge },
-            ]}
-          >
-            <Text
-              style={[
-                styles.optionText,
-                { color: theme.text },
-                displayLang === 'en' && { color: theme.title, fontWeight: '700' },
-              ]}
-            >
-              {strings.englishLabel}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => onDisplayLangChange('fr')}
-            style={[
-              styles.optionButton,
-              { borderColor: theme.border, backgroundColor: theme.input },
-              displayLang === 'fr' && { borderColor: theme.accent, backgroundColor: theme.badge },
-            ]}
-          >
-            <Text
-              style={[
-                styles.optionText,
-                { color: theme.text },
-                displayLang === 'fr' && { color: theme.title, fontWeight: '700' },
-              ]}
-            >
-              {strings.frenchLabel}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
 
       {/* Translation Language */}
       <View style={[styles.section, { backgroundColor: theme.card, shadowColor: theme.text }]}>
@@ -109,24 +62,6 @@ export const Settings: React.FC<SettingsProps> = ({
               ]}
             >
               {strings.frenchLabel}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => onTranslationLangChange('both')}
-            style={[
-              styles.optionButton,
-              { borderColor: theme.border, backgroundColor: theme.input },
-              translationLang === 'both' && { borderColor: theme.accent, backgroundColor: theme.badge },
-            ]}
-          >
-            <Text
-              style={[
-                styles.optionText,
-                { color: theme.text },
-                translationLang === 'both' && { color: theme.title, fontWeight: '700' },
-              ]}
-            >
-              {strings.bothLabel}
             </Text>
           </TouchableOpacity>
         </View>

@@ -27,10 +27,9 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 function App() {
   const [activeScreen, setActiveScreen] = useState<Screen>('dictionary');
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [displayLang, setDisplayLang] = useState<Language>('en');
-  const [translationLang, setTranslationLang] = useState<TranslationLang>('both');
+  const [translationLang, setTranslationLang] = useState<TranslationLang>('en');
   const [themeMode, setThemeMode] = useState<ThemeMode>('color');
-  const strings = translations[displayLang];
+  const strings = translations['en'];
   const theme = themes[themeMode];
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayAnim = useRef(new Animated.Value(0)).current;
@@ -115,9 +114,7 @@ function App() {
         {activeScreen === 'quiz' && <Quiz words={sampleWords} theme={theme} translationLang={translationLang} />}
         {activeScreen === 'settings' && (
           <Settings
-            displayLang={displayLang}
             translationLang={translationLang}
-            onDisplayLangChange={setDisplayLang}
             onTranslationLangChange={setTranslationLang}
             themeMode={themeMode}
             onThemeModeChange={setThemeMode}
