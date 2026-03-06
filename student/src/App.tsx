@@ -19,11 +19,12 @@ import { Story } from './types/storyTypes';
 import { StoriesList } from './components/StoriesList';
 import { StoryReader } from './components/StoryReader';
 import { Settings } from './components/Settings';
+import { FamilyTree } from './components/FamilyTree';
 import { translations, Language, TranslationLang } from './i18n/translations';
 import { themes, ThemeMode } from './i18n/themes';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-type Screen = 'dictionary' | 'wordOfDay' | 'quiz' | 'stories' | 'settings' ;
+type Screen = 'dictionary' | 'wordOfDay' | 'quiz' | 'familyTree' | 'stories' | 'settings';
 
 const DRAWER_WIDTH = 280;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -87,6 +88,8 @@ function App() {
         return strings.quiz;
       case 'settings':
         return strings.settings;
+      case 'familyTree':
+        return 'Family Tree';
       case 'stories':
         return 'Stories';
     }
@@ -96,6 +99,7 @@ function App() {
     { screen: 'dictionary', label: strings.dictionary },
     { screen: 'wordOfDay', label: strings.wordOfDay },
     { screen: 'quiz', label: strings.quiz },
+    { screen: 'familyTree', label: 'Family Tree' },
     { screen: 'stories', label: 'Stories' },
     { screen: 'settings', label: strings.settings },
   ];
@@ -120,6 +124,7 @@ function App() {
         {activeScreen === 'dictionary' && <Dictionary words={sampleWords} theme={theme} translationLang={translationLang} />}
         {activeScreen === 'wordOfDay' && <WordOfDay words={sampleWords} theme={theme} translationLang={translationLang} />}
         {activeScreen === 'quiz' && <Quiz words={sampleWords} theme={theme} translationLang={translationLang} />}
+        {activeScreen === 'familyTree' && <FamilyTree theme={theme} translationLang={translationLang} />}
         {activeScreen === 'stories' && !selectedStory && (
           <StoriesList
             stories={sampleStories}
