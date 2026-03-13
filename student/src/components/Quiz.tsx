@@ -16,6 +16,8 @@ export const Quiz: React.FC<QuizProps> = ({ words, theme, translationLang }) => 
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [skippedWords, setSkippedWords] = useState<Word[]>([]);
+  const [answeredWords, setAnsweredWords] = useState<Array<{ word: Word; correct: boolean; userAnswer: string }>>([]);
   const [quizQuestions, setQuizQuestions] = useState<Array<{
     word: Word;
     options: string[];
@@ -44,17 +46,29 @@ export const Quiz: React.FC<QuizProps> = ({ words, theme, translationLang }) => 
 
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
-    if (answer === quizQuestions[currentQuestion].correctAnswer) {
+    const isCorrect = answer === quizQuestions[currentQuestion].correctAnswer;
+    if (isCorrect) {
       setScore(score + 1);
     }
-    setTimeout(() => {
-      if (currentQuestion + 1 < quizQuestions.length) {
-        setCurrentQuestion(currentQuestion + 1);
-        setSelectedAnswer(null);
-      } else {
-        setShowResult(true);
-      }
-    }, 1000);
+    setAnsweredWords(prev => [...prev, {
+      word: quizQuestions[currentQuestion].word,
+      correct: isCorrect,
+      userAnswer: answer,
+    }]);
+  };
+
+  const handleNext = () => {
+    if (currentQuestion + 1 < quizQuestions.length) {
+      setCurrentQuestion(currentQuestion + 1);
+      setSelectedAnswer(null);
+    } else {
+      setShowResult(true);
+    }
+  };
+
+  const handleSkip = () => {
+    setSkippedWords(prev => [...prev, quizQuestions[currentQuestion].word]);
+    handleNext();
   };
 
   const resetQuiz = () => {
@@ -62,6 +76,8 @@ export const Quiz: React.FC<QuizProps> = ({ words, theme, translationLang }) => 
     setScore(0);
     setShowResult(false);
     setSelectedAnswer(null);
+    setSkippedWords([]);
+    setAnsweredWords([]);
     const shuffledWords = shuffle(words).slice(0, 5);
     const questions = shuffledWords.map(word => {
       const correctAnswer = getTranslation(word);
@@ -105,6 +121,46 @@ export const Quiz: React.FC<QuizProps> = ({ words, theme, translationLang }) => 
           <TouchableOpacity style={[styles.retryButton, { backgroundColor: theme.accent }]} onPress={resetQuiz}>
             <Text style={[styles.retryButtonText, { color: theme.accentText }]}>Try Again</Text>
           </TouchableOpacity>
+
+          {answeredWords.length > 0 && (
+            <View style={[styles.skippedSection, { borderTopColor: theme.border }]}>
+              <Text style={[styles.skippedTitle, { color: theme.text }]}>
+                Your Answers ({answeredWords.length})
+              </Text>
+              {answeredWords.map((item, index) => (
+                <View key={`answered-${item.word.id}-${index}`} style={[styles.answeredItem, { backgroundColor: item.correct ? '#d1fae5' : '#fee2e2', borderColor: item.correct ? '#16a34a' : '#dc2626' }]}>
+                  <View style={styles.answeredTop}>
+                    <Text style={[styles.skippedKirundi, { color: theme.title }]}>{item.word.kirundi}</Text>
+                    <Text style={{ fontSize: 18 }}>{item.correct ? '✅' : '❌'}</Text>
+                  </View>
+                  <Text style={[styles.answeredCorrect, { color: theme.subtext }]}>
+                    Answer: {getTranslation(item.word)}
+                  </Text>
+                  {!item.correct && (
+                    <Text style={[styles.answeredWrong, { color: '#dc2626' }]}>
+                      You chose: {item.userAnswer}
+                    </Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
+
+          {skippedWords.length > 0 && (
+            <View style={[styles.skippedSection, { borderTopColor: theme.border }]}>
+              <Text style={[styles.skippedTitle, { color: theme.text }]}>
+                Skipped Words ({skippedWords.length})
+              </Text>
+              {skippedWords.map((word, index) => (
+                <View key={`skipped-${word.id}-${index}`} style={[styles.skippedItem, { backgroundColor: theme.bg, borderColor: theme.border }]}>
+                  <Text style={[styles.skippedKirundi, { color: theme.title }]}>{word.kirundi}</Text>
+                  <Text style={[styles.skippedTranslation, { color: theme.subtext }]}>
+                    {getTranslation(word)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     );
@@ -173,12 +229,47 @@ export const Quiz: React.FC<QuizProps> = ({ words, theme, translationLang }) => 
               >
                 <Text style={[styles.optionText, { color: theme.text }]}>
                   {option}
-                  {showFeedback && isCorrect && ' ✅'}
-                  {showFeedback && isSelected && !isCorrect && ' ❌'}
+                  {showFeedback && isCorrect }
+                  {showFeedback && isSelected && !isCorrect }
                 </Text>
               </TouchableOpacity>
             );
           })}
+        </View>
+
+        <View style={styles.navRow}>
+          <TouchableOpacity
+            onPress={() => {
+              if (currentQuestion > 0) {
+                setCurrentQuestion(currentQuestion - 1);
+                setSelectedAnswer(null);
+              }
+            }}
+            disabled={currentQuestion === 0}
+            style={[styles.navButton, { backgroundColor: theme.badge, opacity: currentQuestion === 0 ? 0.4 : 1 }]}
+          >
+            <Text style={[styles.navButtonText, { color: theme.badgeText }]}>← Previous</Text>
+          </TouchableOpacity>
+
+          {!selectedAnswer && (
+            <TouchableOpacity
+              onPress={handleSkip}
+              style={[styles.navButton, { backgroundColor: theme.border }]}
+            >
+              <Text style={[styles.navButtonText, { color: theme.text }]}>Skip</Text>
+            </TouchableOpacity>
+          )}
+
+          {selectedAnswer && (
+            <TouchableOpacity
+              onPress={handleNext}
+              style={[styles.navButton, { backgroundColor: theme.accent }]}
+            >
+              <Text style={[styles.navButtonText, { color: theme.accentText }]}>
+                {currentQuestion + 1 < quizQuestions.length ? 'Next →' : 'See Results'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </ScrollView>
@@ -303,5 +394,68 @@ const styles = StyleSheet.create({
   retryButtonText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  skippedSection: {
+    width: '100%',
+    marginTop: 24,
+    paddingTop: 20,
+    borderTopWidth: 1,
+  },
+  skippedTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  skippedItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 8,
+  },
+  skippedKirundi: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  skippedTranslation: {
+    fontSize: 14,
+  },
+  answeredItem: {
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 8,
+  },
+  answeredTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  answeredCorrect: {
+    fontSize: 13,
+  },
+  answeredWrong: {
+    fontSize: 13,
+    marginTop: 2,
+  },
+  navRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    gap: 10,
+  },
+  navButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  navButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
