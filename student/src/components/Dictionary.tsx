@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Word } from '../types';
 import { WordCard } from './WordCard';
 import { Theme } from '../i18n/themes';
@@ -15,22 +15,34 @@ export const Dictionary: React.FC<DictionaryProps> = ({ words, theme, translatio
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const categories = ['all', ...new Set(words.map(w => w.category).filter((c): c is string => Boolean(c)))];
+  const categories = useMemo(
+    () => ['all', ...new Set(words.map(w => w.category).filter((c): c is string => Boolean(c)))],
+    [words]
+  );
 
-  const filteredWords = words.filter(word => {
-    const matchesSearch = 
-      word.kirundi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      word.english.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      word.french?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = 
-      selectedCategory === 'all' || word.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
+  const filteredWords = useMemo(() => {
+    const search = searchTerm.toLowerCase();
+    return words.filter(word => {
+      const matchesCategory = selectedCategory === 'all' || word.category === selectedCategory;
+      if (!matchesCategory) return false;
+      if (!search) return true;
+      return (
+        word.kirundi.toLowerCase().includes(search) ||
+        word.english.toLowerCase().includes(search) ||
+        word.french?.toLowerCase().includes(search)
+      );
+    });
+  }, [words, searchTerm, selectedCategory]);
+
+  const renderItem = useCallback(({ item }: { item: Word }) => (
+    <WordCard word={item} theme={theme} translationLang={translationLang} />
+  ), [theme, translationLang]);
+
+  const keyExtractor = useCallback((item: Word) => item.id, []);
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: theme.bg }]}>
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
+      {/* Search & Categories */}
       <View style={[styles.header, { backgroundColor: theme.card, shadowColor: theme.text }]}>
         <TextInput
           style={[styles.searchInput, { backgroundColor: theme.input, borderColor: theme.border, color: theme.text }]}
@@ -39,48 +51,52 @@ export const Dictionary: React.FC<DictionaryProps> = ({ words, theme, translatio
           onChangeText={setSearchTerm}
           placeholderTextColor={theme.subtext}
         />
-        
-        <ScrollView 
-          horizontal 
+        <FlatList
+          horizontal
           showsHorizontalScrollIndicator={false}
+          data={categories}
+          keyExtractor={(cat) => cat}
           style={styles.categoryScroll}
-        >
-          {categories.map(cat => (
+          renderItem={({ item: cat }) => (
             <TouchableOpacity
-              key={cat}
               onPress={() => setSelectedCategory(cat)}
               style={[
                 styles.categoryButton,
                 { backgroundColor: theme.badge },
-                selectedCategory === cat && { backgroundColor: theme.accent }
+                selectedCategory === cat && { backgroundColor: theme.accent },
               ]}
             >
               <Text style={[
                 styles.categoryText,
                 { color: theme.badgeText },
-                selectedCategory === cat && { color: theme.accentText }
+                selectedCategory === cat && { color: theme.accentText },
               ]}>
                 {cat}
               </Text>
             </TouchableOpacity>
-          ))}
-        </ScrollView>
+          )}
+        />
       </View>
 
-      <View style={styles.wordsContainer}>
-        {filteredWords.map(word => (
-          <WordCard key={word.id} word={word} theme={theme} translationLang={translationLang} />
-        ))}
-      </View>
-
-      {filteredWords.length === 0 && (
-        <View style={styles.noResults}>
-          <Text style={[styles.noResultsText, { color: theme.subtext }]}>
-            No words found. Try a different search term!
-          </Text>
-        </View>
-      )}
-    </ScrollView>
+      {/* Word List */}
+      <FlatList
+        data={filteredWords}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        contentContainerStyle={styles.wordsContainer}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={true}
+        ListEmptyComponent={
+          <View style={styles.noResults}>
+            <Text style={[styles.noResultsText, { color: theme.subtext }]}>
+              No words found. Try a different search term!
+            </Text>
+          </View>
+        }
+      />
+    </View>
   );
 };
 
